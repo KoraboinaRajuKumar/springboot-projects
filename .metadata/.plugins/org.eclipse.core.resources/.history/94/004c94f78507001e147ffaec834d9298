@@ -1,0 +1,44 @@
+package com.infy.service;
+
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.infy.binding.UserForm;
+
+@Service
+public class UserManagementServiceImpl implements IUserManagementService {
+
+	// This methods is check mail is unique or duplicate.
+
+	@Override
+	public String emailCheck(String email) {
+
+		return null;
+	}
+
+	@Override
+	public Map<Integer, String> loadCountys() {
+
+		return null;
+	}
+
+	@Override
+	public Map<Integer, String> loadStates(Integer countryId) {
+
+		return null;
+	}
+
+	@Override
+	public Map<Integer, String> loadcitys(Integer StateId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String registeruser(UserForm form) {
+
+		return null;
+	}
+
+}

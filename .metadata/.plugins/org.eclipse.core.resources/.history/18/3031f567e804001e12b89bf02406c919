@@ -1,0 +1,9 @@
+package com.infy.service;
+
+import com.infy.entity.EmployeeEntity;
+
+public interface IEmployee {
+
+	public String saveEmployee(EmployeeEntity employeeEntity);
+
+}

@@ -1,0 +1,26 @@
+package com.infy.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.infy.entity.EmployeeEntity;
+import com.infy.repositoty.EmployeeRepo;
+
+@Service
+public class EmployeImpl implements IEmployee {
+
+	@Autowired
+	private EmployeeRepo repo;
+
+	public String saveEmployee(EmployeeEntity employeeEntity) {
+
+		EmployeeEntity save = repo.save(employeeEntity);
+
+		if (save.getEmpid() != null) {
+			return "employee data store successfully...!";
+		} else {
+			return "employee data not store successfully...!";
+		}
+
+	}
+}

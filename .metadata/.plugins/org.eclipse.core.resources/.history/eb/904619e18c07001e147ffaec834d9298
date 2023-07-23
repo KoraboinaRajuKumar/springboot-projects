@@ -1,0 +1,113 @@
+package com.infy.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.infy.binding.UserForm;
+import com.infy.entity.CityMaster;
+import com.infy.entity.CountyMaster;
+import com.infy.entity.StateMaster;
+import com.infy.entity.UserMaster;
+import com.infy.repository.CityRepository;
+import com.infy.repository.CountryRepository;
+import com.infy.repository.StateRepository;
+import com.infy.repository.UserRepository;
+
+@Service
+public class UserManagementServiceImpl implements IUserManagementService {
+
+	// This methods is check mail is unique or duplicate
+
+	@Autowired
+	private UserRepository userRepo;
+
+	@Autowired
+	private CountryRepository countryRepo;
+
+	@Autowired
+	private StateRepository stateRepo;
+
+	@Autowired
+	private CityRepository cityrepo;
+
+	@Override
+	public String emailCheck(String email) {
+
+		UserMaster findByEmail = userRepo.findByEmail(email);
+
+		if (findByEmail == null) {
+			return "the email is UNIQUE";
+		}
+
+		return "the email is DUPLICATE";
+	}
+
+	@Override
+	public Map<Integer, String> loadCountys() {
+
+		List<CountyMaster> countrys = countryRepo.findAll();
+
+		Map<Integer, String> countymap = new HashMap<>();
+
+		countrys.forEach(country -> {
+			countymap.put(country.getCountryId(), country.getCountryName());
+		});
+
+		return countymap;
+	}
+
+	@Override
+	public Map<Integer, String> loadStates(Integer countryId) {
+
+		List<StateMaster> states = stateRepo.findbyStateId(countryId);
+
+		Map<Integer, String> stateMap = new HashMap<>();
+
+		states.forEach(state -> {
+			stateMap.put(state.getStateId(), state.getStateName());
+		});
+
+		return stateMap;
+	}
+
+	@Override
+	public Map<Integer, String> loadCitys(Integer StateId) {
+
+		List<CityMaster> citys = cityrepo.findByStateId(StateId);
+
+		Map<Integer, String> cityMap = new HashMap<>();
+
+		citys.forEach(city -> {
+			cityMap.put(city.getCityId(), city.getCityname());
+		});
+
+		return cityMap;
+	}
+
+	@Override
+	public String registerUser(UserForm form) {
+
+		UserMaster entity = new UserMaster();
+
+		BeanUtils.copyProperties(form, entity);
+
+		// set account status
+		entity.setActivStatus("LOCKED");
+
+		// set random password
+
+		UserMaster save = userRepo.save(entity);
+
+		if (save != null) {
+			return "register user successfully";
+		}
+
+		return "register user not successfully";
+	}
+
+}

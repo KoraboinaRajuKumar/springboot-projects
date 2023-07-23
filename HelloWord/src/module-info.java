@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author rajut
+ *
+ */
+module HelloWord {
+}

@@ -1,0 +1,11 @@
+package com.infy.repositoty;
+
+import java.io.Serializable;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.infy.entity.EmployeeEntity;
+
+public interface EmployeeRepo extends JpaRepository<EmployeeEntity, Serializable> {
+
+}

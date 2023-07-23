@@ -1,0 +1,15 @@
+package com.infy.repository;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.infy.entity.CityMaster;
+
+public interface CityRepository extends JpaRepository<CityRepository, Serializable> {
+
+	public List<CityMaster> findByCountryid(Integer stateId);
+
+}

@@ -1,0 +1,19 @@
+package com.infy.service;
+
+import java.util.Map;
+
+import com.infy.binding.UserForm;
+
+public interface IUserManagementService {
+
+	public String emailCheck(String email);
+
+	public Map<Integer, String> loadCountys();
+
+	public Map<Integer, String> loadStates(Integer countryId);
+
+	public Map<Integer, String> loadCitys(Integer StateId);
+
+	public String registerUser(UserForm form);
+
+}

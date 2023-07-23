@@ -1,0 +1,13 @@
+package com.infy.service;
+
+import com.infy.entity.EmployeeEntity;
+
+public interface IEmployee {
+
+	public String saveEmployee(EmployeeEntity employeeEntity);
+
+	public String getEmpDetails(Integer id);
+
+	public String deleteEmp(Integer id);
+
+}

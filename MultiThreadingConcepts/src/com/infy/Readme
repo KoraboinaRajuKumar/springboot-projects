@@ -1,0 +1,16 @@
+
+
+To improve the performance of batch proccesing we need to impliment multithreading
+concept.
+
+
+If we want create multilple thread creation we can use callable interface.
+
+
+To improve the batch processing using multithreding concept
+
+
+not able to increace and descrise so than we shoudgo gor the callable interface.
+
+
+but not control by prograamer taken care by executerservice.
