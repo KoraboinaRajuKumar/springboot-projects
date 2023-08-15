@@ -1,0 +1,284 @@
+ENTITY:
+=====
+
+@Entity
+@Table(name = "CITIZEN_ENTITY")
+public class CitizenEntity {
+
+	@Id
+	@GeneratedValue
+	private Integer cid;
+
+	private String cname;
+
+	private String email;
+
+	private Long phnumber;
+
+	private String gender;
+
+	private Integer ssn;
+
+	private String planname;
+
+	private String planstatus;
+
+	private LocalDateTime createddate;
+}
+
+
+
+SearchModel:(which base u need to search)
+============
+
+public class SearchRequest {
+
+	private String planname;
+
+	private String planstatus;
+}
+
+
+Repository:
+==========
+
+public interface CitizenRepository extends JpaRepository<CitizenEntity, Serializable> {
+
+	// @Query("select distinct(planname) from CitizenEntity")
+
+	@Query("select planname from CitizenEntity") // All plan names with duplicates
+	public List<String> getPlanNames();
+
+	@Query("select planstatus from CitizenEntity")
+	public List<String> getplanstatus();
+
+	// @Query("select cname from CitizenEntity")
+	@Query("select distinct(cname) from CitizenEntity")
+	public List<String> getCname();
+
+	// @Query("select createddate from CitizenEntity order by createddate desc")
+	// //TODO
+
+	// @Query(value = "select * from citizen_entity order by createddate desc limit
+	// 2", nativeQuery = true)
+	
+	// @Query(value = "select TOP 50 PERCENT * from citizen_entity order by
+	// createddate desc", nativeQuery = true)
+	
+	@Query(value = "select * from citizen_entity order by createddate desc", nativeQuery = true)
+	public List<CitizenEntity> getCreateddate();
+
+}
+
+
+SERVICE:
+=======
+
+public interface CitizenService {
+
+	public String saveCitizenData(CitizenEntity citizenEntity);
+
+	
+	public List<String> getplanname();
+
+	public List<String> getplanstatus();
+	
+	public List<String> getCname();
+	
+	
+	public List<CitizenEntity> findAll();
+	
+	
+	public List<CitizenEntity> getCitizenPlannameAndStatus(SearchRequest request);
+
+}
+
+
+
+SERVICEIMPL:
+============
+
+@Service
+public class CitizenServiceImpl implements CitizenService {
+
+	@Autowired
+	private CitizenRepository repo;
+
+	@Override
+	public String saveCitizenData(CitizenEntity citizenEntity) {
+
+		citizenEntity.setCreateddate(LocalDateTime.now());
+
+		CitizenEntity save = repo.save(citizenEntity);
+
+		if (save != null) {
+			return "citizen data saved successfully....!";
+		}
+
+		return "citizen data not saved successfully....!";
+	}
+
+	@Override
+	public List<String> getplanname() {
+
+		return repo.getPlanNames();
+	}
+
+	@Override
+	public List<String> getplanstatus() {
+
+		return repo.getplanstatus();
+	}
+
+	@Override
+	public List<String> getCname() {
+
+		return repo.getCname();
+	}
+
+	@Override
+	public List<CitizenEntity> findAll() {
+		
+		return repo.getCreateddate();
+	}
+
+	@Override
+	public List<CitizenEntity> getCitizenPlannameAndStatus(SearchRequest request) {
+		
+		CitizenEntity entity=new CitizenEntity();
+		
+		if(request.getPlanname()!=null && !request.getPlanname().equals("")) {
+			entity.setPlanname(request.getPlanname());
+		}
+		if(request.getPlanstatus()!=null && !request.getPlanstatus().equals("")) {
+			entity.setPlanstatus(request.getPlanstatus());
+		}
+		Example<CitizenEntity> example = Example.of(entity);
+		
+		List<CitizenEntity> findAll = repo.findAll(example);
+		
+		return findAll;
+	}
+
+
+}
+
+
+CONTROLLER:
+==========
+@RestController
+@RequestMapping("/api/v1")
+public class CitizenController {
+
+	@Autowired
+	private CitizenService service;
+
+	@PostMapping("/savecitizen")
+	public ResponseEntity<String> saveCitizen(@RequestBody CitizenEntity citizenEntity) {
+		String saveCitizenData = service.saveCitizenData(citizenEntity);
+		return new ResponseEntity<String>(saveCitizenData, HttpStatus.OK);
+
+	}
+
+	@GetMapping("/getplan")
+	public ResponseEntity<List<String>> getplans() {
+		List<String> getplanname = service.getplanname();
+
+		return new ResponseEntity<List<String>>(getplanname, HttpStatus.OK);
+
+	}
+
+	@GetMapping("/getstatus")
+	public ResponseEntity<List<String>> getStatus() {
+		List<String> getplanStatus = service.getplanstatus();
+
+		return new ResponseEntity<List<String>>(getplanStatus, HttpStatus.OK);
+
+	}
+
+	@GetMapping("/getnames")
+	public ResponseEntity<List<String>> getnames() {
+		List<String> getnames = service.getCname();
+
+		return new ResponseEntity<List<String>>(getnames, HttpStatus.OK);
+
+	}
+
+	@GetMapping("/findAll")
+	public ResponseEntity<List<CitizenEntity>> getLatestRecord() {
+		List<CitizenEntity> findAll = service.findAll();
+
+		return new ResponseEntity<List<CitizenEntity>>(findAll, HttpStatus.OK);
+
+	}
+
+	@PostMapping("/search")
+	public ResponseEntity<List<CitizenEntity>> searchFunctinality(@RequestBody SearchRequest request) {
+		List<CitizenEntity> citizenPlannameAndStatus = service.getCitizenPlannameAndStatus(request);
+
+		return new ResponseEntity<List<CitizenEntity>>(citizenPlannameAndStatus, HttpStatus.OK);
+
+	}
+}
+
+
+
+
+DATABASE:
+=========
+
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:mysql://${MYSQL_HOST:localhost}:3306/restapi
+spring.datasource.username=root
+spring.datasource.password=password
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.show-sql: true
+
+
+
+
+TESTING:(Postman)
+================
+
+
+POST(SAVE):http://localhost:8080/api/v1/savecitizen
+
+{
+    "cname": "Latest3",
+    "email": "raju@gmail.com",
+    "phnumber": 7993723460,
+    "gender": "male",
+    "ssn": 12345,
+    "planname": "CHILDREN",
+    "planstatus": "APPROVED"
+}
+
+
+
+GET: http://localhost:8080/api/v1/getplan
+
+GET : http://localhost:8080/api/v1/getstatus
+
+GET: http://localhost:8080/api/v1/getnames
+
+GET: http://localhost:8080/api/v1/findAll
+
+
+
+POST(SEARCH): http://localhost:8080/api/v1/search
+
+{
+    "planname": "SNAP",
+    "planstatus": "DENIOD"
+}
+
+
+
+
+
+
+
+
+
+
+
